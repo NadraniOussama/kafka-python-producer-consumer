@@ -2,27 +2,44 @@ from kafka import KafkaConsumer
 import json
 
 topicName = 'testTopic'
-listNumber=[]
-listData=[]
-dictData={"hello":"hey"}
+structurData={"number":0,
+"contract_name":"",
+"name":"",
+"address":"",
+"position":{"lat":0,"lng":0},
+"banking":False,
+"bonus":False,
+"bike_stands":0,
+"available_bike_stands":0,
+"available_bikes":0,
+"status":"OPEN",
+"last_update":1641522522000}
+listData=[structurData]
+def getIndexMessage(message):
+	for i in range(len(listData)-1):
+		if isinstance(message,dict):
+			if listData[i]['number']==message['number']:
+				return i
+		else: 
+			print ("error")
+	return -1
 
 consumer = KafkaConsumer(topicName, bootstrap_servers=['localhost:9092'],
 value_deserializer=lambda m: json.loads(m.decode('ascii')))# , group_id='my-group'
 for message in consumer:
-# message value and key are raw bytes -- decode if necessary!
-# e.g., for unicode: `message.value.decode('utf-8')`
-    # print ("%s:%d:%d: key=%s value=%s" % (message.topic, message.partition, 
-    # message.offset, message.key,message.value))
-    # listData.append(message.value)
+	if isinstance(message.value,dict):
+		
+		print(type(message.value),message.value)
+		
+	else :
+		print("thank god",message.value)
+	index =  getIndexMessage(message.value)
+	if index!=-1:
+		if listData[index]!=message:
+			listData.insert(index,message)
+			print(message.value)
+	else :
+		listData.append(message)
+		print(message.value)
 
-    # print(isinstance(message.value,dict))
-    # print 
-    # listData.append(message.value)
-    print(message.value)
 
-# print(consumer.topicName topicName )    
-    # print(message.value['number']
-    # print(type(message.value))
-print(listData)
-# conumer.flush()
-# print(listData.)

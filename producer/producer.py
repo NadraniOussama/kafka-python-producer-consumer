@@ -1,6 +1,7 @@
 import json, requests
 from kafka import KafkaProducer		
 from kafka.errors import KafkaError
+import time
 
 # GET Station information as JSON from api 
 url = "https://api.jcdecaux.com/vls/v1/stations?contract=marseille&apiKey=d5d56f9105fbbdfd8c1e53072eb3b2fba2bd41c4"
@@ -12,8 +13,10 @@ topicName='testTopic'
 producer = KafkaProducer(bootstrap_servers=['localhost:9092'],
 	value_serializer=lambda m: json.dumps(m).encode('ascii'))
 # Send Json data to Consumer 
-for station in data:
-	producer.send(topicName, station)# {'key': 'value'}
+while True:
+	for station in data:
+		producer.send(topicName, station)# {'key': 'value'}
+	time.sleep(86400)
 
 
 
