@@ -14,32 +14,24 @@ structurData={"number":0,
 "available_bikes":0,
 "status":"OPEN",
 "last_update":1641522522000}
-listData=[structurData]
-def getIndexMessage(message):
+
+# listData=[structurData]
+def getIndexMessage(value):
 	for i in range(len(listData)-1):
-		if isinstance(message,dict):
-			if listData[i]['number']==message['number']:
+		if isinstance(value,dict):
+			if listData[i]['number']==value['number']:
 				return i
 		else: 
-			print ("error")
+			print ("error",value)
 	return -1
 
 consumer = KafkaConsumer(topicName, bootstrap_servers=['localhost:9092'],
-value_deserializer=lambda m: json.loads(m.decode('ascii')))# , group_id='my-group'
+value_deserializer=lambda m: json.loads(m.decode('ascii')))#,auto_offset_reset='earliest')# , group_id='my-group'
+
 for message in consumer:
-	if isinstance(message.value,dict):
-		
-		print(type(message.value),message.value)
-		
-	else :
-		print("thank god",message.value)
-	index =  getIndexMessage(message.value)
-	if index!=-1:
-		if listData[index]!=message:
-			listData.insert(index,message)
-			print(message.value)
-	else :
-		listData.append(message)
-		print(message.value)
-
-
+	# if isinstance(message.value,dict):
+	# data = json.loads(message.value)
+	print("number",message.value['number'],
+		"\t available_bike_stands",message.value['available_bike_stands'],
+		"\tavailable_bikes",message.value['available_bikes'],
+		"\tname",message.value['name'])
