@@ -35,20 +35,18 @@ for message in consumer:
 	value = message.value
 	index =  getIndexMessage(value)
 	if index!=-1:
-		if listData[index]!=message.value:
-			listData.insert(index,message.value)
+		if listData[index]!=value:
+			listData.insert(index,value)
 			isChanged=True
 			print("updating element")
-		# else:
-			
 	else :
-		listData.append(message.value)
+		listData.append(value)
 		isChanged=True
 		print("inserting new elemnet")
 	if isChanged:
-		print("number",message.value['number'],
-		"\t available_bike_stands",message.value['available_bike_stands'],
-		"\tavailable_bikes",message.value['available_bikes'],
-		"\tname",message.value['name'])
+		print("number",value['number'],
+		"\t available_bike_stands",value['available_bike_stands'],
+		"\tavailable_bikes",value['available_bikes'],
+		"\tname",value['name'])
 
 
