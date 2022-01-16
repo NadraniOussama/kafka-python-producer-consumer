@@ -29,12 +29,13 @@ value_deserializer=lambda m: json.loads(m.decode('utf-8')))#,auto_offset_reset='
 
 
 for message in consumer:
-	# if isinstance(message.value,dict):
-	# data = json.loads(message.value)
-	isChanged=False
+	# indique si un element a etait modifier ou ajouter dans la list
+	isChanged=False 
 	value = message.value
+	# get indece ou la station est definie ou bien -1
 	index =  getIndexMessage(value)
 	if index!=-1:
+		# verifie si il ya eu un changement depuit la dernier sauvgrade
 		if listData[index]!=value:
 			listData.insert(index,value)
 			isChanged=True
@@ -43,7 +44,7 @@ for message in consumer:
 		listData.append(value)
 		isChanged=True
 		print("inserting new elemnet")
-	if isChanged:
+	if isChanged: # affiche seulement les elements modifier dans la list
 		print("number",value['number'],
 		"\t available_bike_stands",value['available_bike_stands'],
 		"\tavailable_bikes",value['available_bikes'],
