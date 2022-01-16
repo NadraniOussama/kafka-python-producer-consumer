@@ -1,4 +1,5 @@
 from kafka import KafkaConsumer
+from kafka.consumer.fetcher import ConsumerRecord
 import json
 
 topicName = 'testTopic'
@@ -15,23 +16,39 @@ structurData={"number":0,
 "status":"OPEN",
 "last_update":1641522522000}
 
-# listData=[structurData]
+listData=[structurData]
 def getIndexMessage(value):
 	for i in range(len(listData)-1):
-		if isinstance(value,dict):
-			if listData[i]['number']==value['number']:
-				return i
-		else: 
-			print ("error",value)
+		# print("list",type(listData[i]))#,listData[i]['number']
+		if listData[i]['number']==value['number']:
+			return i
 	return -1
 
 consumer = KafkaConsumer(topicName, bootstrap_servers=['localhost:9092'],
-value_deserializer=lambda m: json.loads(m.decode('ascii')))#,auto_offset_reset='earliest')# , group_id='my-group'
+value_deserializer=lambda m: json.loads(m.decode('utf-8')))#,auto_offset_reset='earliest')# , group_id='my-group'
+
 
 for message in consumer:
 	# if isinstance(message.value,dict):
 	# data = json.loads(message.value)
-	print("number",message.value['number'],
+	isChanged=False
+	value = message.value
+	index =  getIndexMessage(value)
+	if index!=-1:
+		if listData[index]!=message.value:
+			listData.insert(index,message.value)
+			isChanged=True
+			print("updating element")
+		# else:
+			
+	else :
+		listData.append(message.value)
+		isChanged=True
+		print("inserting new elemnet")
+	if isChanged:
+		print("number",message.value['number'],
 		"\t available_bike_stands",message.value['available_bike_stands'],
 		"\tavailable_bikes",message.value['available_bikes'],
 		"\tname",message.value['name'])
+
+

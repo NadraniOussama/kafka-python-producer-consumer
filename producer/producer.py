@@ -18,7 +18,7 @@ def on_send_error(excp):
 # Initialise Kafka Producer 
 topicName='testTopic'
 producer = KafkaProducer(bootstrap_servers=['localhost:9092'],
-	value_serializer=lambda m: json.dumps(m).encode('ascii'))
+	value_serializer=lambda m: json.dumps(m).encode('utf-8'))
 # Send Json data to Consumer 
 while True:
 	r = requests.get(url)
